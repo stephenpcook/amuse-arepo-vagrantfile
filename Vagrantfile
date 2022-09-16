@@ -1,17 +1,34 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-$install_amuse = <<SCRIPT
-python3.7 -m venv venv
-. venv/bin/activate
-python -m pip install --upgrade pip
-pip install numpy docutils mpi4py h5py wheel
-pip install scipy astropy jupyter pandas seaborn matplotlib
-git clone https://github.com/amusecode/amuse.git
-cd amuse
-pip install -e .
-python setup.py develop_build
-cd ..
+$update_apache2 = <<-SCRIPT
+  apt-get update
+  apt-get install -y apache2
+SCRIPT
+
+$amuse_libs = <<-SCRIPT
+  sudo apt-get install -y build-essential gfortran python3-dev \
+    libopenmpi-dev openmpi-bin \
+    libgsl-dev cmake libfftw3-3 libfftw3-dev \
+    libgmp3-dev libmpfr6 libmpfr-dev \
+    libhdf5-serial-dev hdf5-tools \
+    libblas-dev liblapack-dev \
+    python3.7-dev python3.7-venv \
+    python3-venv python3-pip \
+    git
+SCRIPT
+
+$install_amuse = <<-SCRIPT
+  python3.7 -m venv venv
+  . venv/bin/activate
+  python -m pip install --upgrade pip
+  pip install numpy docutils mpi4py h5py wheel
+  pip install scipy astropy jupyter pandas seaborn matplotlib
+  git clone https://github.com/amusecode/amuse.git
+  cd amuse
+  pip install -e .
+  python setup.py develop_build
+  cd ..
 SCRIPT
 
 $set_environment_variables = <<SCRIPT
@@ -82,19 +99,9 @@ Vagrant.configure("2") do |config|
   # Enable provisioning with a shell script. Additional provisioners such as
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
   # documentation for more information about their specific syntax and use.
-  config.vm.provision "shell", inline: <<-SHELL
-    apt-get update
-    apt-get install -y apache2
-    sudo apt-get install -y build-essential gfortran python3-dev \
-      libopenmpi-dev openmpi-bin \
-      libgsl-dev cmake libfftw3-3 libfftw3-dev \
-      libgmp3-dev libmpfr6 libmpfr-dev \
-      libhdf5-serial-dev hdf5-tools \
-      libblas-dev liblapack-dev \
-      python3.7-dev python3.7-venv \
-      python3-venv python3-pip \
-      git
-  SHELL
+  config.vm.provision "shell", inline: $update_apache2
+
+  config.vm.provision "shell", inline: $amuse_libs
 
   config.vm.provision "shell", inline: $install_amuse, privileged: false
 

@@ -18,22 +18,40 @@ $amuse_libs = <<-SCRIPT
     git
 SCRIPT
 
-$install_amuse = <<-SCRIPT
+$setup_venv = <<-SCRIPT
   python3.7 -m venv venv
   . venv/bin/activate
   python -m pip install --upgrade pip
   pip install numpy docutils mpi4py h5py wheel
-  pip install scipy astropy jupyter pandas seaborn matplotlib
+  pip install scipy astropy jupyter pandas seaborn matplotlib sphinx
+  deactivate
+SCRIPT
+
+$install_amuse = <<-SCRIPT
   git clone https://github.com/amusecode/amuse.git
+  . venv/bin/activate
   cd amuse
   pip install -e .
   python setup.py develop_build
   cd ..
+  deactivate
+SCRIPT
+
+$install_arepo = <<-SCRIPT
+  git clone https://gitlab.mpcdf.mpg.de/vrs/arepo.git
+  . venv/bin/activate
+  cd arepo
+  export SYSTYPE=Ubuntu
+  cp /vagrant/Config.sh ~/arepo/Config.sh
+  make
+  cd ..
+  deactivate
 SCRIPT
 
 $set_environment_variables = <<SCRIPT
 tee "/etc/profile.d/myvars.sh" > "/dev/null" <<EOF
 export OMPI_MCA_rmaps_base_oversubscribe=yes
+export SYSTYPE=Ubuntu
 EOF
 SCRIPT
 
@@ -85,13 +103,13 @@ Vagrant.configure("2") do |config|
   # backing providers for Vagrant. These expose provider-specific options.
   # Example for VirtualBox:
   #
-  # config.vm.provider "virtualbox" do |vb|
-  #   # Display the VirtualBox GUI when booting the machine
-  #   vb.gui = true
-  #
-  #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
-  # end
+  config.vm.provider "virtualbox" do |vb|
+    # Display the VirtualBox GUI when booting the machine
+    # vb.gui = true
+  
+    # Customize the amount of memory on the VM:
+    vb.memory = "5120"
+  end
   #
   # View the documentation for the provider you are using for more
   # information on available options.
@@ -103,7 +121,11 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: $amuse_libs
 
+  config.vm.provision "shell", inline: $setup_venv, privileged: false
+
   config.vm.provision "shell", inline: $install_amuse, privileged: false
+
+  config.vm.provision "shell", inline: $install_arepo, privileged: false
 
   config.vm.provision "shell", inline: $set_environment_variables, run: "always"
 end

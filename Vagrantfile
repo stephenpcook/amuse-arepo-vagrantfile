@@ -74,6 +74,10 @@ Vagrant.configure("2") do |config|
   # boxes at https://vagrantcloud.com/search.
   config.vm.box = "ubuntu/bionic64"
 
+
+  # Change the default port used for ssh connections.
+  # config.vm.network "forwarded_port", guest: 22, host: 2200, id: 'ssh'
+
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.

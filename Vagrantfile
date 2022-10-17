@@ -43,6 +43,13 @@ $install_amuse = <<-SCRIPT
   deactivate
 SCRIPT
 
+$add_exeter_mirror = <<-SCRIPT
+  cd amuse
+  git remote add exeter https://github.com/UniExeterRSE/amuse.git
+  git fetch exeter
+  cd ..
+SCRIPT
+
 $install_arepo = <<-SCRIPT
   git clone https://gitlab.mpcdf.mpg.de/vrs/arepo.git
   . venv/bin/activate
@@ -150,6 +157,8 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: $setup_venv, privileged: false
 
   config.vm.provision "shell", inline: $install_amuse, privileged: false
+
+  config.vm.provision "shell", inline: $add_exeter_mirror, privileged: false
 
   config.vm.provision "shell", inline: $install_arepo, privileged: false
 

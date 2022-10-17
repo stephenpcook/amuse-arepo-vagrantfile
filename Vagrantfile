@@ -18,6 +18,12 @@ $amuse_libs = <<-SCRIPT
     git
 SCRIPT
 
+$install_perf = <<-SCRIPT
+  sudo apt-get install -y linux-tools-common \
+    linux-tools-generic \
+    linux-tools-`uname -r`
+SCRIPT
+
 $setup_venv = <<-SCRIPT
   python3.7 -m venv venv
   . venv/bin/activate
@@ -120,6 +126,8 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: $update_apache2
 
   config.vm.provision "shell", inline: $amuse_libs
+
+  config.vm.provision "shell", inline: $install_perf
 
   config.vm.provision "shell", inline: $setup_venv, privileged: false
 

@@ -61,6 +61,18 @@ export SYSTYPE=Ubuntu
 EOF
 SCRIPT
 
+$setup_aliases_config = <<SCRIPT
+if [ -e /vagrant/.bash_aliases ]
+then
+    cp /vagrant/.bash_aliases ~/.bash_aliases
+fi
+if [ -e /vagrant/.gitconfig.aliases ]
+then
+    cp /vagrant/.gitconfig.aliases ~/.gitconfig.aliases
+    git config --global include.path "~/.gitconfig.aliases"
+fi
+SCRIPT
+
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
 # backwards compatibility). Please don't change it unless you know what
@@ -132,6 +144,8 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: $amuse_libs
 
   config.vm.provision "shell", inline: $install_perf
+
+  config.vm.provision "shell", inline: $setup_aliases_config, privileged: false
 
   config.vm.provision "shell", inline: $setup_venv, privileged: false
 

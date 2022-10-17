@@ -1,0 +1,18 @@
+[alias]
+        st = status
+        co = checkout
+        # pretty log
+        hist = log --pretty=format:'%C(auto)%h %ad | %s%d' --graph --date=short
+        hsit = log --pretty=format:'%C(auto)%h %ad | %s%d' --graph --date=short
+        hist-no-graph = log --pretty=format:'%C(auto)%h %ad | %s [%an]%d' --date=short
+        # hist with commit authors ([%an])
+        histl = log --pretty=format:'%C(auto)%h %ad | %s [%an]%d' --graph --date=short
+        # hist --all
+        hista = log --pretty=format:'%C(auto)%h %ad | %s%d' --graph --date=short --all
+        hist-all = log --pretty=format:'%C(auto)%h %ad | %s%d' --graph --date=short --all
+        # hist, only elements with tags
+        hists = log --pretty=format:'%C(auto)%h %ad | %s%d' --graph --date=short --all --simplify-by-decoration
+        type = cat-file -t
+        dump = cat-file -p
+        dt = difftool -w
+        amend = commit --amend
